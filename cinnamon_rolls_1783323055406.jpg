@@ -1,0 +1,454 @@
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import ProductCard from './components/ProductCard';
+import AboutUs from './components/AboutUs';
+import Cart from './components/Cart';
+import Calendar from './components/Calendar';
+import Logo from './components/Logo';
+import { PRODUCTS, CATEGORIES } from './data/products';
+import { Product, CartItem, SizeOption } from './types';
+import { Search, Sparkles, Clock, Calendar as CalendarIcon, Phone, Mail, ChevronRight, CheckCircle } from 'lucide-react';
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState<'menu' | 'about' | 'calendar'>('menu');
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const getMinDateString = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 2);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const [calendarSelectedDate, setCalendarSelectedDate] = useState(getMinDateString());
+  const [showNotification, setShowNotification] = useState<string | null>(null);
+
+  // Load cart from localStorage on init
+  useEffect(() => {
+    const savedCart = localStorage.getItem('goldilocks_cart');
+    if (savedCart) {
+      try {
+        setCart(JSON.parse(savedCart));
+      } catch (e) {
+        console.error('Error parsing cart data', e);
+      }
+    }
+  }, []);
+
+  // Save cart to localStorage when changed
+  const saveCart = (newCart: CartItem[]) => {
+    setCart(newCart);
+    localStorage.setItem('goldilocks_cart', JSON.stringify(newCart));
+  };
+
+  const handleAddToCart = (product: Product, quantity: number, selectedSize?: SizeOption) => {
+    const existingIndex = cart.findIndex(
+      (item) =>
+        item.product.id === product.id &&
+        item.selectedSize?.name === selectedSize?.name
+    );
+
+    const updatedCart = [...cart];
+    if (existingIndex > -1) {
+      updatedCart[existingIndex].quantity += quantity;
+    } else {
+      updatedCart.push({ product, quantity, selectedSize });
+    }
+
+    saveCart(updatedCart);
+    triggerNotification(`Added ${quantity}x ${product.name} to your basket!`);
+  };
+
+  const handleUpdateQuantity = (productId: string, quantity: number, size?: SizeOption) => {
+    const updatedCart = cart.map((item) => {
+      if (item.product.id === productId && item.selectedSize?.name === size?.name) {
+        return { ...item, quantity };
+      }
+      return item;
+    });
+    saveCart(updatedCart);
+  };
+
+  const handleRemoveItem = (productId: string, size?: SizeOption) => {
+    const updatedCart = cart.filter(
+      (item) =>
+        !(item.product.id === productId && item.selectedSize?.name === size?.name)
+    );
+    saveCart(updatedCart);
+    triggerNotification('Item removed from basket.');
+  };
+
+  const handleClearCart = () => {
+    saveCart([]);
+  };
+
+  const triggerNotification = (message: string) => {
+    setShowNotification(message);
+    setTimeout(() => {
+      setShowNotification(null);
+    }, 3000);
+  };
+
+  // Filter products based on search query and category
+  const filteredProducts = PRODUCTS.filter((product) => {
+    const matchesCategory = activeCategory === 'all' || product.category === activeCategory;
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (product.tag && product.tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
+
+  const cartItemsCount = cart.reduce((total, item) => total + item.quantity, 0);
+
+  return (
+    <div className="min-h-screen flex flex-col justify-between bg-bakery-cream" id="app-root-container">
+      {/* Sticky Top Navbar */}
+      <Navbar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        cartCount={cartItemsCount}
+        onOpenCart={() => setIsCartOpen(true)}
+      />
+
+      {/* Floating Notifications Toast */}
+      <AnimatePresence>
+        {showNotification && (
+          <motion.div
+            initial={{ opacity: 0, y: -50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-24 left-1/2 -translate-x-1/2 z-50 bg-bakery-brown-dark text-white border border-bakery-gold/30 px-6 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 text-xs font-bold"
+          >
+            <CheckCircle size={16} className="text-bakery-gold" />
+            <span>{showNotification}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Shopping Basket Drawer */}
+      <Cart
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cartItems={cart}
+        onUpdateQuantity={handleUpdateQuantity}
+        onRemoveItem={handleRemoveItem}
+        onClearCart={handleClearCart}
+      />
+
+      {/* Main Body Stage */}
+      <main className="flex-grow pb-24">
+        <AnimatePresence mode="wait">
+          {/* MENU PAGE */}
+          {activeTab === 'menu' && (
+            <motion.div
+              key="menu"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-12"
+            >
+              {/* Elegant Luxury Hero banner */}
+              <section className="relative bg-bakery-cream-light border-b border-bakery-cream-dark py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+                <div className="absolute inset-0 bg-radial from-bakery-gold/5 via-transparent to-transparent opacity-70" />
+                
+                {/* Visual Background Accent shapes resembling flour dusting & warm light */}
+                <div className="absolute right-12 top-10 w-96 h-96 rounded-full bg-bakery-gold/5 blur-3xl pointer-events-none" />
+                <div className="absolute left-10 bottom-5 w-72 h-72 rounded-full bg-bakery-brown-light/5 blur-2xl pointer-events-none" />
+
+                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+                  <div className="lg:col-span-7 space-y-6 text-left">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bakery-gold/10 border border-bakery-gold/20 text-[10px] font-extrabold tracking-widest text-bakery-brown-medium uppercase">
+                      <Sparkles size={11} className="text-bakery-gold fill-current animate-spin" />
+                      <span>Artisanal Micro-Batch Baking</span>
+                    </div>
+                    <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-bakery-brown-dark leading-tight">
+                      Crafting Perfection, <br />
+                      <span className="text-bakery-gold italic">Two Days</span> in Advance.
+                    </h1>
+                    <p className="text-sm sm:text-base text-bakery-brown-light max-w-xl leading-relaxed font-light">
+                      Welcome to <strong className="font-semibold text-bakery-brown-dark">Goldilocks Micro-Bakery</strong>. We specialize in rich brownies, gourmet cookies, and naturally leavened sourdoughs. Every bite is baked exclusively to your pre-order.
+                    </p>
+                    
+                    {/* Quick Core Rules bar */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                      <div className="flex items-center gap-3 p-3.5 bg-bakery-cream rounded-xl border border-bakery-cream-dark">
+                        <Clock size={18} className="text-bakery-gold flex-shrink-0" />
+                        <div>
+                          <p className="text-xs font-bold text-bakery-brown-dark leading-none">48-Hour Lead Time</p>
+                          <p className="text-[10px] text-bakery-brown-light mt-1">Baked fresh to order only.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 p-3.5 bg-bakery-cream rounded-xl border border-bakery-cream-dark">
+                        <CalendarIcon size={18} className="text-bakery-gold flex-shrink-0" />
+                        <div>
+                          <p className="text-xs font-bold text-bakery-brown-dark leading-none">Flexible Schedulers</p>
+                          <p className="text-[10px] text-bakery-brown-light mt-1">Select your exact delivery date.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Brand Braided Bread Accent Card */}
+                  <div className="lg:col-span-5 hidden lg:block">
+                    <div className="bg-bakery-cream rounded-3xl p-8 border border-bakery-cream-dark shadow-xl flex flex-col items-center justify-center text-center space-y-5 relative">
+                      <div className="absolute top-4 right-4 animate-ping rounded-full w-2 h-2 bg-bakery-gold" />
+                      
+                      <div className="w-24 h-24 bg-bakery-cream-light rounded-2xl p-2 flex items-center justify-center border-2 border-bakery-gold/30 shadow-inner">
+                        <Logo className="w-20 h-20" />
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-[11px] tracking-widest uppercase text-bakery-gold font-bold block">Our Signature Fudge Brownies</span>
+                        <h3 className="font-serif font-extrabold text-lg text-bakery-brown-dark">Pure Decadent Indulgence</h3>
+                        <p className="text-xs text-bakery-brown-light leading-relaxed max-w-xs font-light">
+                          Our fudge brownies and gourmet cookies are hand-whipped in micro-batches with pure Belgian chocolate and premium ingredients.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Main Catalog View Container */}
+              <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+                {/* Filter and Search Bar Row */}
+                <div className="flex flex-col md:flex-row justify-between items-center gap-6 pb-6 border-b border-bakery-cream-dark">
+                  
+                  {/* Elegant Category Pills */}
+                  <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-none" id="category-selector-rail">
+                    {CATEGORIES.map((cat) => (
+                      <button
+                        key={cat.id}
+                        onClick={() => {
+                          setActiveCategory(cat.id);
+                          setSearchQuery('');
+                        }}
+                        className={`
+                          px-4 py-2.5 rounded-full text-xs font-bold tracking-wider uppercase whitespace-nowrap transition-all duration-200 cursor-pointer
+                          ${activeCategory === cat.id
+                            ? 'bg-bakery-brown-dark text-white shadow-md'
+                            : 'bg-bakery-cream-light border border-bakery-cream-dark text-bakery-brown-medium hover:text-bakery-brown-dark hover:border-bakery-brown-light'
+                          }
+                        `}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Search input bar */}
+                  <div className="relative w-full md:w-80">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-bakery-brown-light" size={16} />
+                    <input
+                      type="text"
+                      placeholder="Search brownies, cookies..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full bg-bakery-cream-light border border-bakery-cream-dark focus:border-bakery-gold rounded-full pl-10 pr-4 py-2.5 text-xs font-medium text-bakery-brown-dark focus:outline-none placeholder-bakery-brown-light/50"
+                    />
+                  </div>
+
+                </div>
+
+                {/* Selected Category description */}
+                {activeCategory !== 'all' && (
+                  <div className="bg-bakery-cream-light border border-bakery-cream-dark rounded-2xl p-6 max-w-2xl text-left space-y-1">
+                    <h3 className="font-serif font-bold text-lg text-bakery-brown-dark uppercase tracking-wide">
+                      {CATEGORIES.find((c) => c.id === activeCategory)?.label}
+                    </h3>
+                    <p className="text-xs text-bakery-brown-light font-light leading-relaxed">
+                      {CATEGORIES.find((c) => c.id === activeCategory)?.desc}
+                    </p>
+                  </div>
+                )}
+
+                {/* Product Grid */}
+                {filteredProducts.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="menu-product-grid">
+                    {filteredProducts.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        onAddToCart={handleAddToCart}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-20 text-center space-y-4 max-w-sm mx-auto">
+                    <span className="text-4xl">🌾</span>
+                    <h3 className="font-serif font-bold text-lg text-bakery-brown-dark">No matching delicacies</h3>
+                    <p className="text-xs text-bakery-brown-light leading-relaxed font-light">
+                      We couldn't find any items matching your search criteria. Try filtering by another category or clearing your search.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setSearchQuery('');
+                        setActiveCategory('all');
+                      }}
+                      className="px-5 py-2 rounded-full bg-bakery-brown-dark text-white text-xs font-bold"
+                    >
+                      Reset Catalog View
+                    </button>
+                  </div>
+                )}
+              </section>
+
+              {/* Quick direct contact coordinates banner */}
+              <section className="bg-bakery-cream-dark/50 py-16 border-t border-b border-bakery-cream-dark mt-24">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+                  <h3 className="font-serif text-2xl font-black text-bakery-brown-dark">
+                    Looking for a Bespoke Pastry Creation?
+                  </h3>
+                  <p className="text-xs text-bakery-brown-light max-w-lg mx-auto leading-relaxed font-light">
+                    For premium custom catering, corporate hospitality pre-orders, or specific allergen modifications, get in touch with our baking staff directly. We accommodate elegant requests with precise curation.
+                  </p>
+                  <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pt-2 font-mono text-xs">
+                    <a href="mailto:goldilocksmicrobakery@gmail.com" className="flex items-center gap-2 text-bakery-brown-dark hover:text-bakery-gold transition-colors font-bold">
+                      <Mail size={15} className="text-bakery-gold" />
+                      <span>goldilocksmicrobakery@gmail.com</span>
+                    </a>
+                    <span className="hidden sm:inline text-bakery-cream-dark">•</span>
+                    <a href="tel:03276930916" className="flex items-center gap-2 text-bakery-brown-dark hover:text-bakery-gold transition-colors font-bold">
+                      <Phone size={15} className="text-bakery-gold" />
+                      <span>03276930916</span>
+                    </a>
+                  </div>
+                </div>
+              </section>
+            </motion.div>
+          )}
+
+          {/* STORY PAGE (ABOUT US) */}
+          {activeTab === 'about' && (
+            <motion.div
+              key="about"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3 }}
+            >
+              <AboutUs onExploreMenu={() => setActiveTab('menu')} />
+            </motion.div>
+          )}
+
+          {/* CALENDAR PAGE (PRE-ORDER PLANNER) */}
+          {activeTab === 'calendar' && (
+            <motion.div
+              key="calendar"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3 }}
+              className="py-12 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12"
+              id="calendar-standalone-page"
+            >
+              <div className="text-center space-y-4 max-w-xl mx-auto">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-bakery-gold/10 border border-bakery-gold/20 text-[10px] font-extrabold tracking-widest text-bakery-brown-medium uppercase">
+                  <CalendarIcon size={12} className="text-bakery-gold" />
+                  <span>Interactive Scheduler</span>
+                </div>
+                <h1 className="font-serif text-3xl sm:text-4xl font-black text-bakery-brown-dark">
+                  Schedule Your Hearth Bake
+                </h1>
+                <p className="text-xs text-bakery-brown-light leading-relaxed font-light">
+                  Use our interactive planner to check date availability. We operate under a strict **2-day prior booking lead time** to accommodate slow cold-proofing and hand-braiding queues.
+                </p>
+              </div>
+
+              {/* Central Scheduler Block */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center bg-bakery-cream-light border border-bakery-cream-dark p-8 rounded-3xl shadow-xl">
+                <div>
+                  <Calendar
+                    selectedDate={calendarSelectedDate}
+                    onChange={(date) => {
+                      setCalendarSelectedDate(date);
+                      triggerNotification(`Availability confirmed for ${date}! Ready to schedule.`);
+                    }}
+                  />
+                </div>
+                <div className="space-y-6">
+                  <span className="text-xs font-bold tracking-widest text-bakery-gold uppercase">Pre-order Flow Steps</span>
+                  <ul className="space-y-4 text-xs font-medium text-bakery-brown-medium">
+                    <li className="flex gap-3">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-bakery-gold text-white font-bold flex items-center justify-center font-mono">1</span>
+                      <div>
+                        <p className="font-bold text-bakery-brown-dark">Select Your Target Date</p>
+                        <p className="font-light text-bakery-brown-light mt-0.5">Pick any available date highlighted on the left (at least 2 days ahead).</p>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-bakery-gold text-white font-bold flex items-center justify-center font-mono">2</span>
+                      <div>
+                        <p className="font-bold text-bakery-brown-dark">Add Baked Delicacies to Basket</p>
+                        <p className="font-light text-bakery-brown-light mt-0.5">Explore our menu of fudgy brownies and gourmet cookies, and add items to your basket.</p>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-bakery-gold text-white font-bold flex items-center justify-center font-mono">3</span>
+                      <div>
+                        <p className="font-bold text-bakery-brown-dark">Lock in Your Schedule</p>
+                        <p className="font-light text-bakery-brown-light mt-0.5">Proceed to checkout and input your contact details. Our baking queue updates in real-time.</p>
+                      </div>
+                    </li>
+                  </ul>
+
+                  <div className="pt-4 border-t border-bakery-cream-dark flex gap-4">
+                    <button
+                      onClick={() => setActiveTab('menu')}
+                      className="flex-1 py-3 rounded-xl bg-bakery-brown-dark hover:bg-bakery-brown-medium text-white font-bold tracking-wide text-xs uppercase shadow-sm cursor-pointer text-center"
+                    >
+                      Start Shopping Menu
+                    </button>
+                    {calendarSelectedDate && (
+                      <button
+                        onClick={() => {
+                          setIsCartOpen(true);
+                        }}
+                        className="flex-1 py-3 rounded-xl bg-bakery-gold hover:bg-bakery-gold-light hover:text-bakery-brown-dark text-white font-bold tracking-wide text-xs uppercase shadow-sm cursor-pointer text-center"
+                      >
+                        Open My Basket
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Policy Notes FAQ */}
+              <div className="bg-bakery-brown-dark text-bakery-cream rounded-2xl p-6 sm:p-8 text-left space-y-4 border border-bakery-gold/20">
+                <h3 className="font-serif font-bold text-lg text-white">Scheduling & Ordering FAQ</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-light text-bakery-cream-dark/80">
+                  <div className="space-y-1">
+                    <p className="font-bold text-white">Can I schedule weeks in advance?</p>
+                    <p>Yes, absolutely! Our calendar opens for scheduling up to 60 days in advance, allowing you to secure dates for family gatherings, birthdays, and high-tea socials ahead of time.</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-bold text-white">Is there a minimum order requirement?</p>
+                    <p>No strict minimums exist, though our signature boxes of brownies (Box of 6) and cinnamon rolls (Box of 4) are designed as optimal culinary packages.</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-bold text-white">How do payments work?</p>
+                    <p>To preserve maximum security, we settle orders after checkout. You can wire online transfers directly, or pay upon physical delivery or pickup coordination.</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-bold text-white">How do I change my pre-order date?</p>
+                    <p>We permit scheduling modifications up to 36 hours before delivery. Contact us directly at 03276930916 referencing your order ID copy to coordinate changes.</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
+
+      {/* Footer containing contact coords */}
+      <Footer onNavigate={setActiveTab} />
+    </div>
+  );
+}

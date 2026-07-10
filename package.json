@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-bakery-cream: #FDFCF8;
+  --color-bakery-cream-light: #FFFFFF;
+  --color-bakery-cream-dark: #F5F2EA;
+  --color-bakery-brown-dark: #2D2926;
+  --color-bakery-brown-medium: #6B5E4C;
+  --color-bakery-brown-light: #8C7B6A;
+  --color-bakery-gold: #D4AF37;
+  --color-bakery-gold-light: #FFF8E6;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+/* Custom classy styling */
+body {
+  background-color: var(--color-bakery-cream);
+  color: var(--color-bakery-brown-dark);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bakery-cream-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-bakery-brown-light);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-bakery-brown-medium);
+}

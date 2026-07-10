@@ -1,0 +1,304 @@
+import React, { useState } from 'react';
+import { Product, SizeOption } from '../types';
+import { ShoppingBag, Eye, X, Check, HelpCircle } from 'lucide-react';
+
+interface ProductCardProps {
+  key?: string;
+  product: Product;
+  onAddToCart: (product: Product, quantity: number, selectedSize?: SizeOption) => void;
+}
+
+export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
+  const [selectedSize, setSelectedSize] = useState<SizeOption | undefined>(
+    product.sizeOptions && product.sizeOptions.length > 0 ? product.sizeOptions[0] : undefined
+  );
+  const [quantity, setQuantity] = useState(1);
+  const [showDetails, setShowDetails] = useState(false);
+  const [addedAnimation, setAddedAnimation] = useState(false);
+
+  // Calculate final price based on selected size option
+  const currentPrice = product.price + (selectedSize ? selectedSize.priceAdjustment : 0);
+
+  const handleAddToCart = () => {
+    onAddToCart(product, quantity, selectedSize);
+    setAddedAnimation(true);
+    setTimeout(() => setAddedAnimation(false), 1500);
+  };
+
+  return (
+    <>
+      <div className="bg-bakery-cream-light border border-bakery-cream-dark rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group h-full" id={`product-card-${product.id}`}>
+        
+        {/* Product Image Stage */}
+        <div className="relative aspect-video sm:aspect-square overflow-hidden bg-bakery-cream-dark">
+          {product.tag && (
+            <span className="absolute top-3 left-3 z-10 bg-bakery-gold text-white text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full shadow-md">
+              {product.tag}
+            </span>
+          )}
+          <img
+            src={product.image}
+            alt={product.name}
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+          {/* Elegant overlay on hover */}
+          <div className="absolute inset-0 bg-bakery-brown-dark/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+            <button
+              onClick={() => setShowDetails(true)}
+              className="p-2.5 bg-bakery-cream-light text-bakery-brown-dark rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all font-semibold text-xs flex items-center gap-1 cursor-pointer"
+            >
+              <Eye size={15} />
+              <span>Quick View</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Product Info Block */}
+        <div className="p-5 flex-grow flex flex-col justify-between space-y-4">
+          <div className="space-y-2">
+            <span className="text-[10px] uppercase tracking-wider text-bakery-gold font-bold">
+              {product.category.replace('-', ' ')}
+            </span>
+            <h3 className="font-serif font-extrabold text-lg text-bakery-brown-dark tracking-tight leading-snug group-hover:text-bakery-brown-medium transition-colors">
+              {product.name}
+            </h3>
+            <p className="text-xs text-bakery-brown-light leading-relaxed line-clamp-2 font-light">
+              {product.description}
+            </p>
+          </div>
+
+          {/* Size Options Selectors */}
+          {product.sizeOptions && product.sizeOptions.length > 0 && (
+            <div className="space-y-1.5 pt-1">
+              <span className="text-[10px] tracking-wider uppercase font-bold text-bakery-brown-light">Configure Portion</span>
+              <div className="flex gap-2">
+                {product.sizeOptions.map((option) => (
+                  <button
+                    key={option.name}
+                    type="button"
+                    onClick={() => setSelectedSize(option)}
+                    className={`
+                      flex-1 py-1.5 px-2.5 text-xs rounded-lg font-medium border transition-all text-center cursor-pointer
+                      ${selectedSize?.name === option.name
+                        ? 'bg-bakery-brown-dark border-bakery-brown-dark text-white font-bold'
+                        : 'bg-transparent border-bakery-cream-dark text-bakery-brown-medium hover:border-bakery-brown-light'
+                      }
+                    `}
+                  >
+                    {option.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Quantity and Purchase trigger */}
+          <div className="pt-3 border-t border-bakery-cream-dark/60 flex items-center justify-between gap-3">
+            <div>
+              <span className="text-[10px] block font-semibold text-bakery-brown-light">Classy Pre-order Price</span>
+              <span className="text-lg font-extrabold text-bakery-brown-dark font-serif">
+                Rs. {currentPrice.toLocaleString()}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Simple quantity controls */}
+              <div className="flex items-center border border-bakery-cream-dark rounded-lg overflow-hidden h-9">
+                <button
+                  type="button"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="px-2 text-bakery-brown-medium hover:bg-bakery-cream hover:text-bakery-brown-dark h-full text-sm font-bold"
+                >
+                  -
+                </button>
+                <span className="px-2.5 text-xs font-mono font-bold text-bakery-brown-dark">{quantity}</span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="px-2 text-bakery-brown-medium hover:bg-bakery-cream hover:text-bakery-brown-dark h-full text-sm font-bold"
+                >
+                  +
+                </button>
+              </div>
+
+              {/* Action Button */}
+              <button
+                onClick={handleAddToCart}
+                disabled={addedAnimation}
+                className={`
+                  h-9 px-3 rounded-lg font-bold text-xs tracking-wide uppercase flex items-center justify-center gap-1.5 transition-all cursor-pointer
+                  ${addedAnimation
+                    ? 'bg-green-600 text-white border-green-600 shadow-sm'
+                    : 'bg-bakery-gold hover:bg-bakery-brown-medium text-white shadow-sm hover:shadow-md'
+                  }
+                `}
+              >
+                {addedAnimation ? (
+                  <>
+                    <Check size={14} className="animate-pulse" />
+                    <span>Added</span>
+                  </>
+                ) : (
+                  <>
+                    <ShoppingBag size={14} />
+                    <span>Order</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* DETAILED DIALOG MODAL */}
+      {showDetails && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bakery-brown-dark/75 backdrop-blur-sm transition-opacity duration-300">
+          <div className="bg-bakery-cream-light border border-bakery-cream-dark rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col">
+            {/* Close Button */}
+            <button
+              onClick={() => setShowDetails(false)}
+              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-bakery-cream-light/80 hover:bg-bakery-cream text-bakery-brown-dark shadow-md transition-colors cursor-pointer"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="overflow-y-auto flex-grow">
+              <div className="grid grid-cols-1 md:grid-cols-2">
+                {/* Hero Image in Dialog */}
+                <div className="relative aspect-square md:h-full">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover"
+                  />
+                  {product.tag && (
+                    <span className="absolute top-4 left-4 bg-bakery-gold text-white text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full shadow-lg">
+                      {product.tag}
+                    </span>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div className="p-8 space-y-6 flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <span className="text-xs uppercase tracking-wider text-bakery-gold font-bold">
+                      {product.category.replace('-', ' ')}
+                    </span>
+                    <h2 className="font-serif font-black text-2xl text-bakery-brown-dark tracking-tight leading-tight">
+                      {product.name}
+                    </h2>
+                    <p className="text-sm text-bakery-brown-light font-light leading-relaxed">
+                      {product.description}
+                    </p>
+                  </div>
+
+                  {/* Ingredients and Allergens details */}
+                  <div className="space-y-4 pt-2 border-t border-bakery-cream-dark">
+                    {product.ingredients && product.ingredients.length > 0 && (
+                      <div>
+                        <span className="text-[10px] tracking-wider uppercase font-bold text-bakery-brown-medium block mb-1">
+                          Key Ingredients
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {product.ingredients.map((ing) => (
+                            <span key={ing} className="bg-bakery-cream border border-bakery-cream-dark/50 text-[10px] text-bakery-brown-dark px-2.5 py-1 rounded-md font-medium">
+                              {ing}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {product.allergens && product.allergens.length > 0 && (
+                      <div>
+                        <span className="text-[10px] tracking-wider uppercase font-bold text-bakery-brown-medium block mb-1">
+                          Allergens Note
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {product.allergens.map((alg) => (
+                            <span key={alg} className="bg-red-50 border border-red-100 text-[10px] text-red-800 px-2.5 py-1 rounded-md font-medium">
+                              ⚠️ Contains {alg}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Footer checkout option */}
+                  <div className="pt-6 border-t border-bakery-cream-dark space-y-4">
+                    {product.sizeOptions && product.sizeOptions.length > 0 && (
+                      <div className="space-y-2">
+                        <span className="text-[10px] tracking-wider uppercase font-bold text-bakery-brown-light">Size Option</span>
+                        <div className="flex gap-2">
+                          {product.sizeOptions.map((option) => (
+                            <button
+                              key={option.name}
+                              type="button"
+                              onClick={() => setSelectedSize(option)}
+                              className={`
+                                flex-1 py-2 px-3 text-xs rounded-xl font-medium border transition-all text-center cursor-pointer
+                                ${selectedSize?.name === option.name
+                                  ? 'bg-bakery-brown-dark border-bakery-brown-dark text-white font-bold'
+                                  : 'bg-transparent border-bakery-cream-dark text-bakery-brown-medium hover:border-bakery-brown-light'
+                                }
+                              `}
+                            >
+                              {option.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <span className="text-[10px] block font-semibold text-bakery-brown-light">Total Price</span>
+                        <span className="text-xl font-extrabold text-bakery-brown-dark font-serif">
+                          Rs. {currentPrice.toLocaleString()}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center border border-bakery-cream-dark rounded-lg overflow-hidden h-10">
+                          <button
+                            type="button"
+                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                            className="px-3 text-bakery-brown-medium hover:bg-bakery-cream hover:text-bakery-brown-dark h-full text-sm font-bold"
+                          >
+                            -
+                          </button>
+                          <span className="px-3.5 text-xs font-mono font-bold text-bakery-brown-dark">{quantity}</span>
+                          <button
+                            type="button"
+                            onClick={() => setQuantity(quantity + 1)}
+                            className="px-3 text-bakery-brown-medium hover:bg-bakery-cream hover:text-bakery-brown-dark h-full text-sm font-bold"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        <button
+                          onClick={() => {
+                            handleAddToCart();
+                            setShowDetails(false);
+                          }}
+                          className="h-10 px-6 rounded-xl bg-bakery-gold hover:bg-bakery-brown-medium text-white font-bold text-xs tracking-wider uppercase flex items-center gap-2 shadow-sm cursor-pointer"
+                        >
+                          <ShoppingBag size={14} />
+                          <span>Add to Basket</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
