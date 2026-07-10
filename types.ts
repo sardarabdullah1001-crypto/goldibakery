@@ -1,133 +1,171 @@
-import { Mail, Phone, Clock, MapPin, Instagram, Heart } from 'lucide-react';
+import { Star, Mail, Phone, Clock, Award, ShieldCheck, HeartHandshake } from 'lucide-react';
 import Logo from './Logo';
 
-interface FooterProps {
-  onNavigate: (tab: 'menu' | 'about' | 'calendar') => void;
+interface AboutUsProps {
+  onExploreMenu: () => void;
 }
 
-export default function Footer({ onNavigate }: FooterProps) {
+export default function AboutUs({ onExploreMenu }: AboutUsProps) {
   return (
-    <footer className="bg-bakery-brown-dark text-bakery-cream-light border-t-2 border-bakery-gold/20 pt-16 pb-8" id="bakery-footer">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-12">
-        
-        {/* Brand Column */}
-        <div className="md:col-span-1 space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-bakery-cream-dark rounded-xl p-1 flex items-center justify-center border border-bakery-gold/30">
-              <Logo className="w-8 h-8" />
-            </div>
-            <div>
-              <span className="block font-serif text-lg tracking-wider font-extrabold uppercase text-white leading-none">
-                Goldilocks
-              </span>
-              <span className="block font-sans text-[9px] tracking-widest text-bakery-gold font-bold uppercase mt-0.5">
-                Micro-Bakery
-              </span>
-            </div>
+    <div className="py-12 space-y-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" id="about-us-page">
+      
+      {/* Narrative Intro / Hero Grid */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="lg:col-span-7 space-y-6">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-bakery-gold/10 border border-bakery-gold/20 text-xs font-semibold tracking-wider text-bakery-brown-medium uppercase">
+            <Star size={13} className="fill-current text-bakery-gold" />
+            <span>The Story of Goldilocks</span>
           </div>
-          <p className="text-xs text-bakery-cream-dark/70 leading-relaxed font-light">
-            Crafting luxury artisanal brownies and gourmet cookies in exclusive micro-batches.
+          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-bakery-brown-dark leading-tight">
+            The Exquisite Art of <span className="text-bakery-gold italic">Slow-Batch</span> Baking.
+          </h1>
+          <p className="text-base text-bakery-brown-light leading-relaxed font-light">
+            Founded with a commitment to pure culinary tradition, <strong className="font-medium text-bakery-brown-dark">Goldilocks Micro-Bakery</strong> was born out of a passion for high-fat French butter, slow fermentation, and the perfect blistered crust.
           </p>
-          <div className="flex space-x-3 pt-2">
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noreferrer"
-              className="p-2 rounded-full bg-bakery-brown-medium hover:bg-bakery-gold hover:text-bakery-brown-dark transition-all duration-300"
-              aria-label="Instagram link"
+          <p className="text-base text-bakery-brown-light leading-relaxed font-light">
+            We do not believe in mass production. Instead, every single sourdough boule, braided brioche loaf, and fudgy salted caramel brownie is mixed, rolled, and shaped by hand. Our 36-hour slow fermentation process lets nature cultivate rich flavors and gentle digestibility, creating a bakery experience that feels both comforting and luxurious.
+          </p>
+          <div className="pt-4 flex flex-col sm:flex-row gap-4">
+            <button
+              onClick={onExploreMenu}
+              className="px-8 py-4 rounded-full bg-bakery-brown-dark text-bakery-cream hover:bg-bakery-brown-medium transition-all font-bold tracking-wide text-sm shadow-md cursor-pointer"
             >
-              <Instagram size={16} />
+              Explore the Menu
+            </button>
+            <a
+              href="mailto:goldilocksmicrobakery@gmail.com"
+              className="px-8 py-4 rounded-full border border-bakery-brown-medium/30 text-bakery-brown-dark hover:bg-bakery-cream-dark/40 transition-all font-bold tracking-wide text-sm flex items-center justify-center gap-2"
+            >
+              <Mail size={16} />
+              <span>Inquire for Bespoke Events</span>
             </a>
           </div>
         </div>
 
-        {/* Quick Links Column */}
-        <div className="space-y-4">
-          <h4 className="font-serif font-bold text-sm uppercase tracking-wider text-bakery-gold">Explore Menu</h4>
-          <ul className="space-y-2.5 text-xs text-bakery-cream-dark/80 font-medium">
-            <li>
-              <button onClick={() => onNavigate('menu')} className="hover:text-bakery-gold transition-colors cursor-pointer text-left">
-                Artisanal Brownies & Blondies
-              </button>
-            </li>
-            <li>
-              <button onClick={() => onNavigate('menu')} className="hover:text-bakery-gold transition-colors cursor-pointer text-left">
-                Hand-Rolled Lattice Pies
-              </button>
-            </li>
-            <li>
-              <button onClick={() => onNavigate('menu')} className="hover:text-bakery-gold transition-colors cursor-pointer text-left">
-                36-Hour Sourdoughs & Brioche
-              </button>
-            </li>
-            <li>
-              <button onClick={() => onNavigate('menu')} className="hover:text-bakery-gold transition-colors cursor-pointer text-left">
-                Premium Layered Celebration Cakes
-              </button>
-            </li>
-            <li>
-              <button onClick={() => onNavigate('menu')} className="hover:text-bakery-gold transition-colors cursor-pointer text-left">
-                Warm Cream Cheese Cinnamon Rolls
-              </button>
-            </li>
-          </ul>
-        </div>
-
-        {/* Pre-order Policy column */}
-        <div className="space-y-4">
-          <h4 className="font-serif font-bold text-sm uppercase tracking-wider text-bakery-gold">Our Philosophy</h4>
-          <div className="space-y-3 text-xs text-bakery-cream-dark/80 font-light leading-relaxed">
-            <div className="flex items-start gap-2.5">
-              <Clock size={15} className="text-bakery-gold mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-semibold text-white">2 Days Prior Pre-Orders</p>
-                <p className="text-bakery-cream-dark/60 mt-0.5">
-                  To achieve maximum fermentation and pristine quality, place orders at least 48 hours in advance.
-                </p>
-              </div>
+        {/* Narrative Visual Card */}
+        <div className="lg:col-span-5 relative">
+          <div className="absolute inset-0 bg-bakery-gold rounded-3xl rotate-3 opacity-10" />
+          <div className="relative bg-bakery-cream-light border border-bakery-cream-dark rounded-3xl p-8 shadow-xl space-y-6">
+            <div className="w-16 h-16 bg-bakery-cream-dark rounded-2xl flex items-center justify-center border border-bakery-gold/20">
+              <Logo className="w-12 h-12" />
             </div>
-            <div className="flex items-start gap-2.5">
-              <MapPin size={15} className="text-bakery-gold mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-semibold text-white">Fresh Handcrafted Quality</p>
-                <p className="text-bakery-cream-dark/60 mt-0.5">
-                  Baked exclusively to order. Never mass-produced, always curated with luxury ingredients.
-                </p>
-              </div>
+            <p className="font-serif italic text-lg text-bakery-brown-dark leading-relaxed">
+              &ldquo;Goldilocks stands for precise luxury. Our baking represents loops of endless dedication, premium Belgian chocolate, and meticulous timing. Because perfect taste cannot be rushed.&rdquo;
+            </p>
+            <div className="pt-2 border-t border-bakery-cream-dark">
+              <p className="font-bold text-sm text-bakery-brown-dark">The Culinary Team</p>
+              <p className="text-xs text-bakery-gold font-bold tracking-wider uppercase mt-0.5">Goldilocks Micro-Bakery</p>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Contact Info column */}
-        <div className="space-y-4" id="bakery-contact-section">
-          <h4 className="font-serif font-bold text-sm uppercase tracking-wider text-bakery-gold">Contact & Orders</h4>
-          <ul className="space-y-3 text-xs text-bakery-cream-dark/80 font-medium">
-            <li className="flex items-center gap-3">
-              <Mail size={15} className="text-bakery-gold" />
+      {/* Philosophy / Features Grid */}
+      <section className="space-y-12">
+        <div className="text-center max-w-3xl mx-auto space-y-4">
+          <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-bakery-brown-dark">
+            Our Golden Standards
+          </h2>
+          <p className="text-sm text-bakery-brown-light font-light leading-relaxed">
+            Every ingredient is hand-selected and strictly organic where possible, and we follow rigorous traditional European techniques.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Card 1 */}
+          <div className="bg-bakery-cream-light border border-bakery-cream-dark rounded-2xl p-8 space-y-4 hover:shadow-lg transition-all duration-300">
+            <div className="w-12 h-12 bg-bakery-gold/10 rounded-xl flex items-center justify-center text-bakery-gold">
+              <Award size={24} />
+            </div>
+            <h3 className="font-serif font-bold text-lg text-bakery-brown-dark">Pristine Butter & Grains</h3>
+            <p className="text-xs text-bakery-brown-light font-light leading-relaxed">
+              We exclusively use 82% fat grass-fed pasture butter and stone-ground heritage flours to guarantee structural perfection and deep crumb aromatics.
+            </p>
+          </div>
+          {/* Card 2 */}
+          <div className="bg-bakery-cream-light border border-bakery-cream-dark rounded-2xl p-8 space-y-4 hover:shadow-lg transition-all duration-300">
+            <div className="w-12 h-12 bg-bakery-gold/10 rounded-xl flex items-center justify-center text-bakery-gold">
+              <ShieldCheck size={24} />
+            </div>
+            <h3 className="font-serif font-bold text-lg text-bakery-brown-dark">36-Hour Fermentation</h3>
+            <p className="text-xs text-bakery-brown-light font-light leading-relaxed">
+              By taking over 36 hours for leavening, our doughs break down gluten proteins naturally, resulting in a gentle, gut-friendly sourdough of pure nourishment.
+            </p>
+          </div>
+          {/* Card 3 */}
+          <div className="bg-bakery-cream-light border border-bakery-cream-dark rounded-2xl p-8 space-y-4 hover:shadow-lg transition-all duration-300">
+            <div className="w-12 h-12 bg-bakery-gold/10 rounded-xl flex items-center justify-center text-bakery-gold">
+              <HeartHandshake size={24} />
+            </div>
+            <h3 className="font-serif font-bold text-lg text-bakery-brown-dark">Micro-Batch Exclusivity</h3>
+            <p className="text-xs text-bakery-brown-light font-light leading-relaxed">
+              We bake only on demand. Pre-ordering ensures zero waste and ensures your delicacies were loaded in the hearth exactly a few hours prior to receipt.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* The 2-Day Pre-order Explanation Banner */}
+      <section className="bg-bakery-brown-dark text-bakery-cream rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-xl border border-bakery-gold/20">
+        <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-y-12 translate-x-12">
+          <Clock size={320} className="text-bakery-gold" />
+        </div>
+        <div className="max-w-2xl space-y-6 relative z-10">
+          <span className="text-xs font-bold tracking-widest text-bakery-gold uppercase">Why 2 Days Prior?</span>
+          <h3 className="font-serif text-3xl font-bold tracking-tight text-white">
+            Honoring the Timing of Live Yeast and Cultured Ferments
+          </h3>
+          <p className="text-sm text-bakery-cream-dark/80 leading-relaxed font-light">
+            Real baking requires patient preparation. It takes a full 36 hours for our sourdough, brioche doughs, and premium pastries to ferment, prove, and develop to full flavor complexity.
+          </p>
+          <p className="text-sm text-bakery-cream-dark/80 leading-relaxed font-light">
+            When you place your pre-order, you trigger a chain of meticulous preparation stages specifically allocated for your selection. That is why we cannot offer same-day fulfillment, and why your patience yields unmatched flavor.
+          </p>
+          <div className="pt-2 flex items-center gap-4 text-xs font-semibold text-bakery-gold">
+            <span className="bg-bakery-gold/10 px-3 py-1 rounded-full border border-bakery-gold/20 text-white">48h Minimum Prep</span>
+            <span className="text-bakery-cream-dark/70">•</span>
+            <span>Micro-batch Freshness Guaranteed</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Coordination Info Cards */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="bg-bakery-cream-light border border-bakery-cream-dark rounded-2xl p-8 flex gap-5 items-start">
+          <div className="p-3 bg-bakery-gold/10 rounded-xl text-bakery-gold flex-shrink-0">
+            <Phone size={24} />
+          </div>
+          <div className="space-y-2">
+            <h4 className="font-serif font-bold text-lg text-bakery-brown-dark">Give Us a Ring</h4>
+            <p className="text-xs text-bakery-brown-light font-light leading-relaxed">
+              Have questions regarding bespoke events, weddings, or dietary configurations? Call our head baker directly.
+            </p>
+            <p className="text-lg font-mono font-bold text-bakery-brown-dark">
+              <a href="tel:03276930916" className="hover:text-bakery-gold transition-colors">
+                03276930916
+              </a>
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-bakery-cream-light border border-bakery-cream-dark rounded-2xl p-8 flex gap-5 items-start">
+          <div className="p-3 bg-bakery-gold/10 rounded-xl text-bakery-gold flex-shrink-0">
+            <Mail size={24} />
+          </div>
+          <div className="space-y-2">
+            <h4 className="font-serif font-bold text-lg text-bakery-brown-dark">Bespoke Catering Inquiries</h4>
+            <p className="text-xs text-bakery-brown-light font-light leading-relaxed">
+              We specialize in premium corporate gifts, luxury high-tea boxes, and custom dessert boards.
+            </p>
+            <p className="text-base font-semibold text-bakery-brown-dark underline decoration-bakery-gold decoration-2 underline-offset-4">
               <a href="mailto:goldilocksmicrobakery@gmail.com" className="hover:text-bakery-gold transition-colors">
                 goldilocksmicrobakery@gmail.com
               </a>
-            </li>
-            <li className="flex items-center gap-3">
-              <Phone size={15} className="text-bakery-gold" />
-              <a href="tel:03276930916" className="hover:text-bakery-gold transition-colors font-mono">
-                03276930916
-              </a>
-            </li>
-            <li className="text-[10px] text-bakery-cream-dark/50 pt-2 border-t border-bakery-brown-medium/50">
-              Feel free to call or email us directly for bespoke event catering or special order requests.
-            </li>
-          </ul>
+            </p>
+          </div>
         </div>
+      </section>
 
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 pt-8 border-t border-bakery-brown-medium/40 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-bakery-cream-dark/50 font-light">
-        <p>© 2026 Goldilocks Micro-Bakery. All culinary rights reserved.</p>
-        <p className="flex items-center gap-1">
-          Made with baking passion and <Heart size={12} className="text-bakery-gold fill-current" /> for sweet enthusiasts.
-        </p>
-      </div>
-    </footer>
+    </div>
   );
 }
