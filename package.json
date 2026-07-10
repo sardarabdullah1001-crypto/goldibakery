@@ -1,39 +1,39 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
-@import "tailwindcss";
-
-@theme {
-  --color-bakery-cream: #FDFCF8;
-  --color-bakery-cream-light: #FFFFFF;
-  --color-bakery-cream-dark: #F5F2EA;
-  --color-bakery-brown-dark: #2D2926;
-  --color-bakery-brown-medium: #6B5E4C;
-  --color-bakery-brown-light: #8C7B6A;
-  --color-bakery-gold: #D4AF37;
-  --color-bakery-gold-light: #FFF8E6;
-  --font-serif: "Playfair Display", Georgia, serif;
-  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
-}
-
-/* Custom classy styling */
-body {
-  background-color: var(--color-bakery-cream);
-  color: var(--color-bakery-brown-dark);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Custom scrollbars */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-bakery-cream-dark);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-bakery-brown-light);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-bakery-brown-medium);
+{
+  "name": "react-example",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server.ts",
+    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
+    "start": "node dist/server.cjs",
+    "preview": "vite preview",
+    "clean": "rm -rf dist server.js",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/genai": "^2.4.0",
+    "@supabase/supabase-js": "^2.110.1",
+    "@tailwindcss/vite": "^4.1.14",
+    "@vitejs/plugin-react": "^5.0.4",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "lucide-react": "^0.546.0",
+    "motion": "^12.23.24",
+    "nodemailer": "^9.0.3",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "vite": "^6.2.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.14.0",
+    "@types/nodemailer": "^8.0.1",
+    "autoprefixer": "^10.4.21",
+    "esbuild": "^0.25.0",
+    "tailwindcss": "^4.1.14",
+    "tsx": "^4.21.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.3"
+  }
 }
